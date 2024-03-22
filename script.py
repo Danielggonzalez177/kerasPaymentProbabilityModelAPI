@@ -100,8 +100,8 @@ def predict():
         data = data['data']
         df = pd.DataFrame(data)
         
-        red_data = nn_model_predict(df,'models/best_keras_model_20_03_2024.keras')
-        bayes_data = bayes_nn_model_predict(df,'models/best_bayes_model_weights_20_03_2024.h5',10)
+        red_data = nn_model_predict(df,'models/best_keras_model_22_03_2024.keras')
+        bayes_data = bayes_nn_model_predict(df,'models/best_bayes_model_weights_22_03_2024.h5',10)
         # return the stat as a json
         return jsonify({'data':{'red': red_data.tolist(), 'bayes': bayes_data.tolist()}})
 
