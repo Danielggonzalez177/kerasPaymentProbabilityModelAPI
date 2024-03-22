@@ -34,63 +34,62 @@ def posterior(kernel_size, bias_size, dtype=None):
     return posterior_model
 
 def bayes_nn_structure(colum_dim):
-  new_model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=(1,colum_dim)),
+    new_model = tf.keras.models.Sequential([
+        tf.keras.layers.Flatten(input_shape=(1,colum_dim)),
 
-    tf.keras.layers.Dense(80,
-                                    activation='relu'),
-    tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(80,
+                                        activation='relu'),
+        tf.keras.layers.Dropout(0.5),
 
-    tf.keras.layers.Dense(50,
+        tf.keras.layers.Dense(50,
 
-                                    activation='relu'),
-    tfp.layers.DenseVariational(40,
-                                      make_prior_fn=prior,
-                                make_posterior_fn=posterior,
-                                    activation='relu'),
-    tf.keras.layers.Dropout(0.5),
+                                        activation='relu'),
+        tfp.layers.DenseVariational(40,
+                                        make_prior_fn=prior,
+                                    make_posterior_fn=posterior,
+                                        activation='relu'),
+        tf.keras.layers.Dropout(0.5),
 
 
 
-    tf.keras.layers.Dense(30, activation='relu'),
-    tf.keras.layers.Dropout(0.5),
-    tf.keras.layers.Dense(20, activation='relu'),
-    tf.keras.layers.Dropout(0.5),
-    tf.keras.layers.Dense(colum_dim, activation='softmax'),
-    tf.keras.layers.Dropout(0.1),
+        tf.keras.layers.Dense(30, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(20, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(colum_dim, activation='softmax'),
+        tf.keras.layers.Dropout(0.1),
 
-    tf.keras.layers.Dense(1,
-                          activation='sigmoid'),
+        tf.keras.layers.Dense(1,
+                              activation='sigmoid'),
 
     ])
-  return new_model
+    return new_model
 
 def bayes_nn_model_predict(df_data:pd.DataFrame,path:str,amount:int):
-  print('Loading Bayes model')
-  colum_dim = df_data.shape[1]
-  model = bayes_nn_structure(colum_dim)
-  model.load_weights(path)
-  print('Bayes model loaded')
-  df_data = df_data.to_numpy()
-  df_data = df_data.reshape((-1, 1, colum_dim))
-  data_tuple = tuple([np.round(model.predict(df_data,verbose=0)[:]*100,2) for i in range(amount)])
-  mean_data= np.mean(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
-  min_data = np.min(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
-  max_data = np.max(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
- 
-  return np.concatenate(tuple([mean_data,min_data,max_data]),axis=1)
+    print('Loading Bayes model')
+    colum_dim = df_data.shape[1]
+    model = bayes_nn_structure(colum_dim)
+    model.load_weights(path)
+    print('Bayes model loaded')
+    df_data = df_data.to_numpy()
+    df_data = df_data.reshape((-1, 1, colum_dim))
+    data_tuple = tuple([np.round(model.predict(df_data,verbose=0)[:]*100,2) for i in range(amount)])
+    mean_data= np.mean(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
+    min_data = np.min(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
+    max_data = np.max(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
+    return np.concatenate(tuple([mean_data,min_data,max_data]),axis=1)
 
 def nn_model_predict(data:pd.DataFrame,path:str):
-  print('Loading Red model')
-  # Load the model from a .keras file
-  model = keras.models.load_model(path)
-  print('Red model loaded')
-  df_data = data
-  colum_dim = df_data.shape[1]
-  df_data = df_data.to_numpy()
-  df_data = df_data.reshape((-1, 1, colum_dim))
-  new_data_pred = model.predict(df_data)
-  return np.round(new_data_pred[:]*100,2)
+    print('Loading Red model')
+    # Load the model from a .keras file
+    model = keras.models.load_model(path)
+    print('Red model loaded')
+    df_data = data
+    colum_dim = df_data.shape[1]
+    df_data = df_data.to_numpy()
+    df_data = df_data.reshape((-1, 1, colum_dim))
+    new_data_pred = model.predict(df_data)
+    return np.round(new_data_pred[:]*100,2)
 
 @app.route('/predict', methods=['POST'])
 def predict():
