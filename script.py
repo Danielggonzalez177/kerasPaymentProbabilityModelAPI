@@ -77,7 +77,7 @@ def bayes_nn_model_predict(df_data:pd.DataFrame,path:str,amount:int):
     mean_data= np.mean(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
     min_data = np.min(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
     max_data = np.max(np.concatenate(data_tuple,axis=1),axis=1)[:, np.newaxis]
-    return np.concatenate(tuple([mean_data,min_data,max_data]),axis=1)
+    return np.concatenate(tuple([min_data,mean_data,max_data]),axis=1)
 
 def nn_model_predict(data:pd.DataFrame,path:str):
     print('Loading Red model')
@@ -100,8 +100,8 @@ def predict():
         data = data['data']
         df = pd.DataFrame(data)
         
-        red_data = nn_model_predict(df,'models/best_keras_model_01_04_2024.keras')
-        bayes_data = bayes_nn_model_predict(df,'models/best_bayes_model_weights_01_04_2024.h5',10)
+        red_data = nn_model_predict(df,'models/best_keras_model_22_04_2024.keras')
+        bayes_data = bayes_nn_model_predict(df,'models/best_bayes_model_weights_22_04_2024.h5',10)
         # return the stat as a json
         return jsonify({'data':{'red': red_data.tolist(), 'bayes': bayes_data.tolist()}})
 
